@@ -65,7 +65,8 @@ class Fluent::KafkaOutput < Fluent::BufferedOutput
       record["idc"] = @idc
       record["platform"] = @platform  if @need_platform_info
 ###################################
-      message = Kafka::Message.new(record.to_s)
+      require 'json'
+      message = Kafka::Message.new(record.to_json)
       records_by_topic[topic] ||= []
       records_by_topic[topic][partition] ||= []
       records_by_topic[topic][partition] << message
