@@ -86,7 +86,7 @@ class Fluent::KafkaOutput < Fluent::BufferedOutput
             :partition => partition
           }
           @producers[topic] ||= Kafka::ZKProducer.new(config)
-          producer.zkpush(messages)
+          @producers[topic].zkpush(messages)
         elsif @host and @port
           config = {
             :port      => @port,
@@ -95,7 +95,7 @@ class Fluent::KafkaOutput < Fluent::BufferedOutput
             :partition => partition
           }
           @producers[topic] ||= Kafka::Producer.new(config)
-          producer.push(messages)
+          @producers[topic].push(messages)
         else
           puts "host or port argument is nil"
         end
