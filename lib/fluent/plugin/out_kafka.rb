@@ -10,21 +10,6 @@ class Fluent::KafkaOutput < Fluent::BufferedOutput
     @host_local = Socket.gethostname
     @ip_local = Socket::getaddrinfo(@host_local, Socket::SOCK_STREAM)[0][3]
     @idc = @host_local.split("-")[0]
-    if @need_platform_info
-      require 'nodes'
-      im_nodes = Nodes.new()
-      result = im_nodes.search_tags(@host_local.split(".baidu.com")[0])
-      if result["status"] != 0
-        @platform = ""
-      else
-        mid_array = result["data"]["tags"]
-        platform_list = mid_array.select{|x| x[0] == "PLATFORM"}
-        platform_list.each do |y|
-          @platform = /[A-Za-z]+[0-9]+/.match(y[1]).to_s
-          break if @platform != ''
-        end
-      end
-    end
 ####################################
 
   end
@@ -40,6 +25,23 @@ class Fluent::KafkaOutput < Fluent::BufferedOutput
   def configure(conf)
     super
     @producers = {} # keyed by topic:partition
+#####################################
+    if @need_platform_info
+      require 'nodes'
+      im_nodes = Nodes.new()
+      result = im_nodes.search_tags(@host_local.split(".baidu.com")[0])
+      if result["status"] != 0
+        @platform = ""
+      else
+        mid_array = result["data"]["tags"]
+        platform_list = mid_array.select{|x| x[0] == "PLATFORM"}
+        platform_list.each do |y|
+          @platform = /[A-Za-z]+[0-9]+/.match(y[1]).to_s
+          break if @platform != ''
+        end
+      end
+    end
+######################################
   end
 
   def start
